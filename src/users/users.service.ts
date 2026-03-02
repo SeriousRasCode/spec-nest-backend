@@ -12,7 +12,7 @@ export class UsersService {
       data: {
         name: data.name,
         email: data.email,
-        password: '', // Default or temporary password, though registration should happen via AuthService
+        password: '',
       },
     });
   }
