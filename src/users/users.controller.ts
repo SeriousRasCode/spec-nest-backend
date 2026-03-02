@@ -48,14 +48,14 @@ export class UsersController {
     return this.usersService.update(id, dto);
   }
 
-  // 🔒 Authenticated user profile
+  // Authenticated users
   @UseGuards(JwtAuthGuard)
   @Get('profile/me')
   profile(@Req() req: any) {
     return (req as any).user;
   }
 
-  // 🔐 Admin-only delete
+  // Admin only
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
