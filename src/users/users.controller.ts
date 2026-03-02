@@ -10,7 +10,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -51,8 +51,8 @@ export class UsersController {
   // 🔒 Authenticated user profile
   @UseGuards(JwtAuthGuard)
   @Get('profile/me')
-  profile(@Req() req: Request) {
-    return req.user;
+  profile(@Req() req: any) {
+    return (req as any).user;
   }
 
   // 🔐 Admin-only delete

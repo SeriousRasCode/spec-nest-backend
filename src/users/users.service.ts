@@ -8,7 +8,13 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   create(data: CreateUserDto) {
-    return this.prisma.user.create({ data });
+    return this.prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: '', // Default or temporary password, though registration should happen via AuthService
+      },
+    });
   }
 
   findAll() {

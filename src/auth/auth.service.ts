@@ -10,14 +10,14 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
-  async register(data: any) {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+  async register(dto: any) {
+    const hashed = await bcrypt.hash(dto.password, 10);
 
     return this.prisma.user.create({
       data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
+        name: dto.name,
+        email: dto.email,
+        password: hashed,
       },
     });
   }
@@ -26,12 +26,10 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new UnauthorizedException('Invalid credentials');
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) throw new UnauthorizedException('Invalid credentials');
 
     const payload = { sub: user.id, role: user.role };
-    return {
-      access_token: this.jwt.sign(payload),
-    };
+    return { access_token: this.jwt.sign(payload) };
   }
 }
