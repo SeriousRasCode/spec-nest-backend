@@ -7,30 +7,39 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { AdminGuard } from '../auth/roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // 🔓 Public (optional – you can remove later)
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.usersService.create(dto);
   }
 
+  // 🔓 Public (for now)
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
+  // 🔓 Public
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
+  // 🔓 Public
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -39,6 +48,15 @@ export class UsersController {
     return this.usersService.update(id, dto);
   }
 
+  // 🔒 Authenticated user profile
+  @UseGuards(JwtAuthGuard)
+  @Get('profile/me')
+  profile(@Req() req: Request) {
+    return req.user;
+  }
+
+  // 🔐 Admin-only delete
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.delete(id);
